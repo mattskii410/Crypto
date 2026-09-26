@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Crypto desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050608;--panel:rgba(10,14,24,.82);--line:#1d2a44;--ink:#E6ECFF;--mute:#7F8BA8;
+  --up:#22E07A;--down:#FF2E4D;--brass:#FF2E4D;--blue:#3D9BFF;--track:#0f1628;
+  --hud:"Orbitron","Rajdhani",system-ui,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#050608;--ink:#E6ECFF}}
+:root[data-theme="dark"]{--bg:#050608;--ink:#E6ECFF}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;color:var(--ink);font:500 16px/1.5 "Rajdhani",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(900px 520px at 0% 0%,rgba(255,46,77,.16),transparent 60%),
+    radial-gradient(900px 560px at 100% 100%,rgba(61,155,255,.18),transparent 60%),
+    linear-gradient(rgba(61,155,255,.05) 1px,transparent 1px) 0 0/40px 40px,
+    linear-gradient(90deg,rgba(61,155,255,.05) 1px,transparent 1px) 0 0/40px 40px,
+    var(--bg);
+  background-attachment:fixed}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:10;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px)}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:2px}
+.num{font-variant-numeric:tabular-nums}
+.up{color:var(--up)}.down{color:var(--down)}
+
+header{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;padding:20px 20px 14px;max-width:1320px;margin:0 auto}
+header h1{font:800 24px/1 var(--hud);margin:0;letter-spacing:.14em;text-transform:uppercase;
+  background:linear-gradient(90deg,var(--down),#ff7a8c 40%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 10px rgba(255,46,77,.35))}
+.status{color:var(--mute);font-size:14px;display:flex;align-items:center;gap:8px}
+.status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--down);box-shadow:0 0 8px var(--down);animation:blink 1.6s infinite}
+.status b{font-weight:600;color:var(--blue)}
+@keyframes blink{50%{opacity:.25}}
+.tape{display:flex;gap:26px;overflow-x:auto;padding:9px 20px;font-size:14px;max-width:1320px;margin:0 auto;scrollbar-width:none;
+  border-block:1px solid transparent;border-image:linear-gradient(90deg,var(--down),var(--line) 30%,var(--line) 70%,var(--blue)) 1}
+.tape::-webkit-scrollbar{display:none}
+.tape span{white-space:nowrap}
+.tape .sym{font:700 12px var(--hud);letter-spacing:.08em;margin-right:8px;color:var(--mute)}
+
+main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;padding:22px 20px;max-width:1320px;margin:0 auto}
+@media (max-width:860px){main{grid-template-columns:1fr;padding:14px}header,.tape{padding-left:14px;padding-right:14px}}
+section.col{min-width:0}
+h2{font:700 12px/1.2 var(--hud);letter-spacing:.2em;text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+#news-h{color:var(--down)} #mkt-h{color:var(--blue)}
+h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,currentColor,transparent);opacity:.5}
+
+/* HUD frame shared by both panels */
+.feature,.panel{position:relative;background:var(--panel);border:1px solid var(--line);
+  clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px));
+  backdrop-filter:blur(6px)}
+.feature::before,.panel::before{content:"";position:absolute;top:0;left:0;width:60px;height:2px;background:var(--c)}
+.feature::after,.panel::after{content:"";position:absolute;bottom:0;right:0;width:60px;height:2px;background:var(--c)}
+.feature{--c:var(--down);padding:24px 24px 0;box-shadow:inset 0 0 60px rgba(255,46,77,.07)}
+.panel{--c:var(--blue);padding:18px;box-shadow:inset 0 0 60px rgba(61,155,255,.07)}
+
+.feature .src{font:600 11px var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.feature h3{font:700 clamp(21px,3vw,30px)/1.2 var(--hud);margin:10px 0 12px;letter-spacing:.01em;max-width:26ch;text-shadow:0 0 18px rgba(61,155,255,.25)}
+.feature p{margin:0 0 18px;color:#AEB8D3;max-width:62ch;font-size:17px;line-height:1.45}
+.feature .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:18px;flex-wrap:wrap}
+.feature .read{font:600 12px var(--hud);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--down);border-bottom:1px solid currentColor;padding-bottom:2px}
+.feature .read:hover{text-shadow:0 0 10px var(--down)}
+.ctrls{display:flex;align-items:center;gap:6px}
+.ctrls button{background:rgba(61,155,255,.06);border:1px solid var(--line);width:34px;height:34px;cursor:pointer;display:grid;place-items:center;color:var(--blue)}
+.ctrls button:hover{border-color:var(--blue);box-shadow:0 0 12px rgba(61,155,255,.4)}
+.ctrls .count{font:600 12px var(--hud);color:var(--mute);min-width:52px;text-align:center;letter-spacing:.08em}
+.progress{height:3px;background:var(--track);margin:0 -24px}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--down),var(--blue));box-shadow:0 0 10px var(--blue),0 0 4px var(--down)}
+.fade{animation:fade .5s ease}
+@keyframes fade{0%{opacity:0;filter:blur(3px);transform:translateX(-6px)}60%{opacity:1}100%{filter:none;transform:none}}
+@media (prefers-reduced-motion:reduce){.fade,.status::before{animation:none}}
+
+.list{list-style:none;margin:16px 0 0;padding:0}
+.list li button{display:grid;grid-template-columns:auto 1fr auto;gap:4px 12px;width:100%;text-align:left;background:none;border:0;border-top:1px solid var(--line);padding:12px 4px;cursor:pointer;align-items:start}
+.list li button::before{content:"";width:6px;height:6px;margin-top:8px;border:1px solid var(--mute);transform:rotate(45deg)}
+.list li button:hover .t{color:#fff;text-shadow:0 0 10px rgba(61,155,255,.5)}
+.list .t{font-weight:600;font-size:16.5px;line-height:1.3;color:#C9D2EA}
+.list .m{font-size:13px;color:var(--mute);white-space:nowrap;padding-top:2px}
+.list li[aria-current="true"] .t{color:var(--down)}
+.list li[aria-current="true"] button::before{background:var(--down);border-color:var(--down);box-shadow:0 0 8px var(--down)}
+
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.summary div{min-width:0;border-left:2px solid var(--line);padding-left:10px}
+.summary div:first-child{border-color:var(--down)} .summary div:last-child{border-color:var(--blue)}
+.summary small{display:block;font:600 10px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.summary strong{font:700 17px/1.5 var(--hud);letter-spacing:.02em}
+.tabs{display:flex;gap:2px;border:1px solid var(--line);padding:3px;margin-bottom:14px}
+.tabs button{flex:1;border:0;background:none;padding:9px 4px;cursor:pointer;font:600 10.5px var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
+.tabs button[aria-selected="true"]{background:linear-gradient(90deg,rgba(255,46,77,.22),rgba(61,155,255,.22));color:#fff;box-shadow:inset 0 -2px 0 var(--blue)}
+.chart{width:100%;overflow-x:auto;padding:6px 0}
+.chart svg{display:block;width:100%;height:auto}
+.chart svg rect{filter:drop-shadow(0 0 4px currentColor)}
+.chart .empty{color:var(--mute);font-size:15px;padding:18px 4px}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:16px}
+th{font:600 10px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);text-align:right;padding:6px 4px;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+td{padding:9px 4px;border-bottom:1px solid rgba(29,42,68,.7);text-align:right;white-space:nowrap}
+tbody tr:hover{background:rgba(61,155,255,.06)}
+td .n{font-weight:600}
+td .s{color:var(--mute);font:600 10px var(--hud);letter-spacing:.08em;margin-left:8px}
+.note{font-size:14px;color:var(--mute);margin-top:12px}
+
+/* view switch + learn */
+.views{display:flex;gap:2px;border:1px solid var(--line);padding:3px;margin-left:auto}
+.views button{border:0;background:none;padding:8px 14px;cursor:pointer;font:600 11px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
+.views button[aria-selected="true"]{background:linear-gradient(90deg,rgba(255,46,77,.22),rgba(61,155,255,.22));color:#fff;box-shadow:inset 0 -2px 0 var(--down)}
+@media (max-width:560px){.views{margin-left:0;width:100%}.views button{flex:1}}
+[hidden]{display:none!important}
+.learn{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;padding:22px 20px;max-width:1320px;margin:0 auto}
+@media (max-width:860px){.learn{grid-template-columns:1fr;padding:14px}}
+.learn .feature{padding-bottom:10px}
+.primer h3{font:700 17px/1.3 var(--hud);letter-spacing:.04em;margin:22px 0 8px;color:#fff}
+.primer h3:first-child{margin-top:0}
+.primer p,.primer li{color:#AEB8D3;font-size:17px;line-height:1.5;max-width:64ch}
+.primer p{margin:0 0 10px}
+.primer ol{margin:0 0 10px;padding-left:22px}
+.primer li{margin-bottom:6px}
+.primer li b,.primer p b{color:var(--ink)}
+.primer .warn{border-left:2px solid var(--down);padding:8px 12px;background:rgba(255,46,77,.07);margin-top:16px}
+.gsearch{width:100%;background:rgba(61,155,255,.06);border:1px solid var(--line);color:var(--ink);font:500 16px "Rajdhani",sans-serif;padding:10px 12px;margin-bottom:6px}
+.gsearch::placeholder{color:var(--mute)}
+.gsearch:focus{outline:none;border-color:var(--blue);box-shadow:0 0 12px rgba(61,155,255,.35)}
+.gloss{margin:0;max-height:none}
+.gloss div{padding:11px 2px;border-bottom:1px solid rgba(29,42,68,.7)}
+.gloss dt{font:700 13px var(--hud);letter-spacing:.06em;color:var(--blue);margin-bottom:3px}
+.gloss dd{margin:0;color:#C1CAE3;font-size:16px;line-height:1.4}
+.gcount{font-size:13px;color:var(--mute);margin:0 0 4px}
+
+/* strategy */
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font:600 9.5px var(--hud);letter-spacing:.08em;text-transform:uppercase;padding:3px 6px;border:1px solid currentColor;white-space:nowrap}
+.chip.g{color:var(--up)}.chip.r{color:var(--down)}.chip.b{color:var(--blue)}
+.score{font:700 15px var(--hud)}
+.scr td{vertical-align:top}
+.scr td:last-child{text-align:left;white-space:normal}
+.scr-wrap{overflow-x:auto}
+.crit{list-style:none;padding:0;margin:0 0 10px}
+.crit li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(29,42,68,.7)}
+.crit li span:first-child{font:700 12px var(--hud);color:var(--blue);padding-top:3px;min-width:22px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Crypto desk</h1>
+  <span class="status" id="status">Loading…</span>
+  <nav class="views" role="tablist" aria-label="View">
+    <button role="tab" data-v="dash" aria-selected="true">Dashboard</button>
+    <button role="tab" data-v="strat" aria-selected="false">Strategy</button>
+    <button role="tab" data-v="learn" aria-selected="false">Learn</button>
+  </nav>
+</header>
+<div class="tape num" id="tape" aria-label="Price tape"></div>
+
+<main id="dash">
+  <section class="col" aria-labelledby="news-h">
+    <h2 id="news-h">Latest news</h2>
+    <article class="feature" id="feature" aria-live="polite">
+      <div id="fBody"></div>
+      <div class="row">
+        <a class="read" id="fLink" href="#" target="_blank" rel="noopener">Read the full story</a>
+        <div class="ctrls">
+          <button id="prev" aria-label="Previous story">‹</button>
+          <span class="count num" id="count"></span>
+          <button id="pause" aria-label="Pause rotation">❚❚</button>
+          <button id="next" aria-label="Next story">›</button>
+        </div>
+      </div>
+      <div class="progress" aria-hidden="true"><i id="bar"></i></div>
+    </article>
+    <ul class="list" id="list"></ul>
+  </section>
+
+  <section class="col" aria-labelledby="mkt-h">
+    <h2 id="mkt-h">Market</h2>
+    <div class="panel">
+      <div class="summary num" id="summary"></div>
+      <div class="tabs" role="tablist" id="tabs">
+        <button role="tab" data-k="gainers" aria-selected="true">Top gainers</button>
+        <button role="tab" data-k="trending" aria-selected="false">Trending</button>
+        <button role="tab" data-k="volume" aria-selected="false">Volume surges</button>
+      </div>
+      <div class="chart" id="chart"></div>
+      <table class="num" id="table"></table>
+      <p class="note" id="note"></p>
+    </div>
+  </section>
+</main>
+
+<div class="learn" id="strat" hidden>
+  <section class="col" aria-labelledby="play-h">
+    <h2 id="play-h" style="color:var(--down)">Small-cap momentum playbook</h2>
+    <div class="feature primer">
+      <p>No one can reliably tell which small coins will rise; most small caps lose value over time, and past patterns often don't repeat. What you can do is use a clear rule set that finds coins <b>showing</b> momentum right now and limits how much you lose when it fades. That's what the screen on this tab does.</p>
+
+      <h3>What the screen looks for</h3>
+      <ol class="crit">
+        <li><span>01</span><div><b>Small but real.</b> Market cap between $30M and $1B, with at least $1M in daily volume, so there's room to grow but enough trading to get in and out.</div></li>
+        <li><span>02</span><div><b>Volume surge.</b> 24h volume above 25% of market cap. Unusual trading often comes before or alongside a move.</div></li>
+        <li><span>03</span><div><b>Healthy momentum.</b> Up 3% to 40% in 24 hours. Rising, but not already in a vertical spike.</div></li>
+        <li><span>04</span><div><b>Trend confirmation.</b> Also up over 7 days, so it's not just a one-day bounce inside a downtrend.</div></li>
+      </ol>
+
+      <h3>Red flags that lower the score</h3>
+      <p>Up more than 40% in a day (you'd likely be buying from early sellers), thin volume (hard to exit), and a falling 7-day trend. Always check the project yourself for unlocked token supply, anonymous teams, and hype that's driving the move.</p>
+
+      <h3>Managing the trade</h3>
+      <ol>
+        <li><b>Size small.</b> Many traders cap any single small-cap position at 1 to 2% of their portfolio.</li>
+        <li><b>Set a stop-loss</b> before you buy, often 10 to 20% below entry, and don't move it down.</li>
+        <li><b>Take profit in steps</b>, like selling a portion at +25% and +50%, instead of waiting for a perfect top.</li>
+        <li><b>Spread out</b> across several positions; with small caps, a few winners usually have to cover several losers.</li>
+        <li><b>Use limit orders</b> to avoid slippage in thin markets.</li>
+      </ol>
+
+      <p class="warn">This is a trend screen, not a prediction or a recommendation to buy. I'm not a financial advisor, and small-cap crypto can drop 50% or more in a day. Only risk money you can afford to lose.</p>
+    </div>
+  </section>
+
+  <section class="col" aria-labelledby="scr-h">
+    <h2 id="scr-h" style="color:var(--blue)">Momentum screen</h2>
+    <div class="panel">
+      <div class="scr-wrap"><table class="num scr" id="scr"></table></div>
+      <p class="note" id="scrnote"></p>
+    </div>
+  </section>
+</div>
+
+<div class="learn" id="learn" hidden>
+  <section class="col" aria-labelledby="primer-h">
+    <h2 id="primer-h" style="color:var(--down)">Crypto basics</h2>
+    <div class="feature primer">
+      <h3>What cryptocurrency is</h3>
+      <p>A cryptocurrency is digital money that runs on a <b>blockchain</b>: a shared public ledger copied across thousands of computers. No bank or government keeps the record. Instead, the network agrees on every transaction, and cryptography makes past entries practically impossible to change.</p>
+      <p>You hold crypto through a <b>wallet</b>, which stores your private keys. Whoever controls the keys controls the coins, which is why people say "not your keys, not your coins."</p>
+
+      <h3>Coins vs. tokens</h3>
+      <p><b>Coins</b> like Bitcoin (BTC) and Ether (ETH) are native to their own blockchains. <b>Tokens</b> are built on top of an existing chain, such as the thousands of tokens on Ethereum or Solana. <b>Stablecoins</b> like USDC and USDT are tokens pegged to a currency, usually the US dollar, and are used to park value or move money between trades.</p>
+
+      <h3>What moves prices</h3>
+      <p>Supply and demand. Demand shifts with news, regulation, interest rates, big investors buying or selling, and overall market mood. Supply depends on each coin's rules; Bitcoin is capped at 21 million coins, while others have no cap. Smaller coins with low trading volume can swing wildly on relatively little money.</p>
+
+      <h3>How trading works</h3>
+      <ol>
+        <li><b>Pick a platform.</b> Most people use a centralized exchange (CEX) like Coinbase, Kraken or Binance, which requires identity verification. Decentralized exchanges (DEXs) let you trade straight from your own wallet.</li>
+        <li><b>Fund your account.</b> Deposit dollars or another currency by bank transfer or card, or send crypto in from a wallet.</li>
+        <li><b>Place an order.</b> A <b>market order</b> buys or sells right away at the current price. A <b>limit order</b> only fills at the price you set or better.</li>
+        <li><b>Understand pairs.</b> Every trade swaps one asset for another, shown as a pair like BTC/USD or ETH/BTC.</li>
+        <li><b>Store it.</b> Leave it on the exchange for convenience, or move it to your own wallet for more control.</li>
+        <li><b>Track taxes.</b> In many countries, selling, swapping, or spending crypto is a taxable event.</li>
+      </ol>
+      <p>Beyond buying and holding (<b>spot trading</b>), exchanges offer <b>futures</b> and <b>leverage</b>, which multiply both gains and losses and can wipe out a position quickly.</p>
+
+      <p class="warn">Crypto is highly volatile and can lose most of its value fast. This page is general education, not financial advice.</p>
+    </div>
+  </section>
+
+  <section class="col" aria-labelledby="gloss-h">
+    <h2 id="gloss-h" style="color:var(--blue)">Vocabulary</h2>
+    <div class="panel">
+      <input class="gsearch" id="gsearch" type="search" placeholder="Search terms" aria-label="Search terms">
+      <p class="gcount" id="gcount"></p>
+      <dl class="gloss" id="gloss"></dl>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ---------- Snapshot (used when live feeds can't load) ---------- */
+const SNAP = {
+  asOf: "Sep 25, 2026",
+  summary: { mcap: 2.97e12, vol: 107.4e9, btcDom: 57.2 },
+  tape: [
+    {s:"BTC", p:84379, c:0.4}, {s:"SOL", p:113.55}, {s:"HYPE", p:91.68},
+    {s:"XRP", p:1.47}, {s:"QNT", p:96.92, c:34.5}, {s:"BCH", p:338}, {s:"UNI", p:9.28}
+  ],
+  gainers: [
+    {n:"Quant", s:"QNT", p:96.92, c:34.5},
+    {n:"Bitcoin", s:"BTC", p:84424.84, c:0.4},
+    {n:"Overtake", s:"TAKE", p:0.05628, c:-22.0},
+    {n:"Gstock", s:"GSTOCK", p:0.01817, c:-30.6},
+    {n:"Lobster", s:"LOBSTER", p:0.1101, c:-30.7}
+  ],
+  trending: [
+    {n:"Ondo", s:"ONDO"}, {n:"Plasma", s:"XPL"}, {n:"Quant", s:"QNT", p:96.92, c:34.5},
+    {n:"Backpack", s:"—"}, {n:"Chainlink", s:"LINK"}
+  ],
+  volume: [
+    {n:"Bitcoin", s:"BTC", p:84424.84, c:0.4, v:38.16e9},
+    {n:"Lobster", s:"LOBSTER", p:0.1101, c:-30.7, v:37.95e6},
+    {n:"Overtake", s:"TAKE", p:0.05628, c:-22.0, v:36.24e6},
+    {n:"Gstock", s:"GSTOCK", p:0.01817, c:-30.6, v:5.64e6}
+  ],
+  small: [
+    {n:"Overtake", s:"TAKE", p:0.05628, c:-22.0, v:36.24e6},
+    {n:"Lobster", s:"LOBSTER", p:0.1101, c:-30.7, v:37.95e6},
+    {n:"Gstock", s:"GSTOCK", p:0.01817, c:-30.6, v:5.64e6}
+  ],
+  news: [
+    {t:"Bitcoin holds near $84.4K as hot PMI data lifts Fed hike odds", src:"The Rio Times", time:"Sep 24",
+     d:"BTC ended Thursday flat after dipping under $84,000. A strong US business-activity reading pushed October hike odds to roughly 70% and Treasury yields to a 19-year high.",
+     u:"https://www.riotimesonline.com/crypto-markets-bitcoin-majors-friday-september-25-2026/"},
+    {t:"Fed proposes stablecoin rules under the GENIUS Act", src:"The Rio Times", time:"Sep 24",
+     d:"The proposal would require stablecoins to be backed by safe, liquid assets with redemption at par and new reserve disclosures. A public comment period is now open.",
+     u:"https://www.riotimesonline.com/crypto-markets-bitcoin-majors-friday-september-25-2026/"},
+    {t:"Bitget detects unauthorized transfers from some hot wallets", src:"Crypto Integrated", time:"Sep 24",
+     d:"The exchange says its security systems flagged the transfers at 18:31 UTC and that it activated emergency response procedures while it investigates.",
+     u:"https://www.cryptointegrat.com/p/crypto-news-september-25-2026"},
+    {t:"Quant jumps about 35% to lead the day's movers", src:"CoinCodex", time:"Sep 25",
+     d:"QNT traded near $97 in Friday's session while the total crypto market cap edged about 1% higher.",
+     u:"https://coincodex.com/article/92587/daily-market-update-for-september-25-2026"},
+    {t:"Binance to list Hyperliquid's HYPE with a Seed Tag", src:"Crypto Integrated", time:"Sep 25",
+     d:"The listing lands as Hyperliquid order-book data also starts streaming through DoubleZero Edge.",
+     u:"https://www.cryptointegrat.com/p/crypto-news-september-25-2026"},
+    {t:"Crypto market cap rises to $2.97T with sentiment in Greed", src:"Coin Gabbar", time:"Sep 25",
+     d:"CoinGecko data showed a 0.5% daily gain, $107B in volume, and Bitcoin dominance at about 57%. The fear-and-greed gauge sat at 71.",
+     u:"https://www.coingabbar.com/en/crypto-news-today-bitcoin-ethereum-defi-stablecoins-updates"},
+    {t:"CME plans Bitcoin Cash and Uniswap futures for October 19", src:"Investing News", time:"Sep 23",
+     d:"Standard and micro contracts are planned, pending regulatory review, extending CME's growing lineup of altcoin futures.",
+     u:"https://investingnews.com/cryptocurrency-market-recap/"},
+    {t:"Circle sells shares to Binance in an expanded USDC deal", src:"Investing News", time:"Sep 23",
+     d:"The private placement comes with a five-year commercial agreement and a lock-up that keeps Binance from selling or hedging the shares for up to two years.",
+     u:"https://investingnews.com/cryptocurrency-market-recap/"},
+    {t:"LayerZero CEO calls KelpDAO operator's lawsuit meritless", src:"Crypto Integrated", time:"Sep 25",
+     d:"Bryan Pellegrino said Evercrest filed a civil claim in British Columbia and that he will defend it.",
+     u:"https://www.cryptointegrat.com/p/crypto-news-september-25-2026"}
+  ]
+};
+
+/* ---------- Formatting ---------- */
+const $ = id => document.getElementById(id);
+function fmtPrice(p){
+  if(p==null) return "—";
+  if(p>=1000) return "$"+p.toLocaleString("en-US",{maximumFractionDigits:0});
+  if(p>=1) return "$"+p.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+  return "$"+p.toPrecision(3);
+}
+function fmtBig(v){
+  if(v==null) return "—";
+  if(v>=1e12) return "$"+(v/1e12).toFixed(2)+"T";
+  if(v>=1e9) return "$"+(v/1e9).toFixed(1)+"B";
+  if(v>=1e6) return "$"+(v/1e6).toFixed(1)+"M";
+  return "$"+Math.round(v).toLocaleString();
+}
+function fmtPct(c){ return c==null ? "—" : (c>0?"+":"")+c.toFixed(1)+"%"; }
+function cls(c){ return c==null ? "" : c>=0 ? "up" : "down"; }
+function el(tag, props={}, kids=[]){
+  const e=document.createElement(tag);
+  for(const k in props){ if(k==="text") e.textContent=props[k]; else if(k==="cls") e.className=props[k]; else e.setAttribute(k,props[k]); }
+  (Array.isArray(kids)?kids:[kids]).forEach(k=>k&&e.appendChild(k));
+  return e;
+}
+
+/* ---------- State ---------- */
+let D = SNAP, live = false, idx = 0, paused = false, tab = "gainers";
+const CYCLE = 30000; let started = Date.now(), elapsedAtPause = 0;
+
+/* ---------- News ---------- */
+function renderFeature(){
+  const a = D.news[idx]; if(!a) return;
+  const body = $("fBody"); body.innerHTML = "";
+  const wrap = el("div",{cls:"fade"},[
+    el("div",{cls:"src",text:a.src+(a.time?", "+a.time:"")}),
+    el("h3",{text:a.t}),
+    a.d ? el("p",{text:a.d}) : null
+  ]);
+  body.appendChild(wrap);
+  $("fLink").href = a.u || "#";
+  $("count").textContent = (idx+1)+" / "+D.news.length;
+  document.querySelectorAll("#list li").forEach((li,i)=>li.setAttribute("aria-current", i===idx));
+}
+function renderList(){
+  const ul=$("list"); ul.innerHTML="";
+  D.news.forEach((a,i)=>{
+    const b=el("button",{},[el("span",{cls:"t",text:a.t}), el("span",{cls:"m",text:a.src})]);
+    b.onclick=()=>go(i);
+    ul.appendChild(el("li",{},b));
+  });
+}
+function go(i){
+  idx=(i+D.news.length)%D.news.length; started=Date.now(); elapsedAtPause=0; renderFeature();
+}
+function tick(){
+  const bar=$("bar");
+  const el_ = paused ? elapsedAtPause : Date.now()-started;
+  bar.style.width = Math.min(100, el_/CYCLE*100)+"%";
+  if(!paused && el_>=CYCLE) go(idx+1);
+  requestAnimationFrame(tick);
+}
+$("prev").onclick=()=>go(idx-1);
+$("next").onclick=()=>go(idx+1);
+$("pause").onclick=()=>{
+  paused=!paused;
+  if(paused){ elapsedAtPause=Date.now()-started; $("pause").textContent="▶"; $("pause").setAttribute("aria-label","Resume rotation"); }
+  else { started=Date.now()-elapsedAtPause; $("pause").textContent="❚❚"; $("pause").setAttribute("aria-label","Pause rotation"); }
+};
+
+/* ---------- Market ---------- */
+function renderTape(){
+  const t=$("tape"); t.innerHTML="";
+  D.tape.forEach(x=>{
+    const s=el("span",{},[el("span",{cls:"sym",text:x.s}), document.createTextNode(fmtPrice(x.p)+" ")]);
+    if(x.c!=null) s.appendChild(el("span",{cls:cls(x.c),text:fmtPct(x.c)}));
+    t.appendChild(s);
+  });
+}
+function renderSummary(){
+  const s=D.summary, box=$("summary"); box.innerHTML="";
+  [["Market cap",fmtBig(s.mcap)],["24h volume",fmtBig(s.vol)],["BTC dominance",s.btcDom!=null?s.btcDom.toFixed(1)+"%":"—"]]
+    .forEach(([k,v])=>box.appendChild(el("div",{},[el("small",{text:k}),el("strong",{text:v})])));
+}
+function renderChart(rows){
+  const box=$("chart"); box.innerHTML="";
+  const pts = rows.filter(r=>r.c!=null).slice(0,8);
+  if(!pts.length){ box.appendChild(el("div",{cls:"empty",text:"No 24h price data for this list yet."})); return; }
+  const W=520, rowH=30, pad=8, labelW=74, H=pts.length*rowH+pad*2;
+  const max=Math.max(...pts.map(p=>Math.abs(p.c)),1);
+  const hasNeg=pts.some(p=>p.c<0), hasPos=pts.some(p=>p.c>=0);
+  const plotL=labelW, plotR=W-58, zero = hasNeg&&hasPos ? (plotL+plotR)/2 : hasNeg ? plotR : plotL;
+  const scale = (hasNeg&&hasPos ? (plotR-plotL)/2 : (plotR-plotL))/max;
+  const ns="http://www.w3.org/2000/svg";
+  const svg=document.createElementNS(ns,"svg");
+  svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.setAttribute("role","img");
+  svg.setAttribute("aria-label","24 hour price change by coin");
+  const mk=(t,a)=>{const e=document.createElementNS(ns,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+  svg.appendChild(mk("line",{x1:zero,x2:zero,y1:pad-2,y2:H-pad+2,stroke:"var(--mute)","stroke-width":1,"stroke-dasharray":"2 3"}));
+  pts.forEach((p,i)=>{
+    const y=pad+i*rowH, w=Math.max(2,Math.abs(p.c)*scale), x=p.c>=0?zero:zero-w;
+    const color=p.c>=0?"var(--up)":"var(--down)";
+    const lab=mk("text",{x:0,y:y+rowH/2+4,"font-size":11,fill:"var(--ink)","font-weight":700,"font-family":"Orbitron,sans-serif","letter-spacing":"1"}); lab.textContent=p.s; svg.appendChild(lab);
+    svg.appendChild(mk("rect",{x,y:y+8,width:w,height:rowH-16,fill:color,style:"color:"+color}));
+    const vx = p.c>=0 ? x+w+6 : x-6;
+    const v=mk("text",{x:vx,y:y+rowH/2+4,"font-size":13,"font-weight":600,fill:color,"text-anchor":p.c>=0?"start":"end"}); v.textContent=fmtPct(p.c); svg.appendChild(v);
+  });
+  box.appendChild(svg);
+}
+function renderTable(){
+  const rows=D[tab]||[], t=$("table"); t.innerHTML="";
+  const showVol = tab==="volume";
+  const head=el("tr",{},[el("th",{text:"Coin"}),el("th",{text:"Price"}),el("th",{text:"24h"}), showVol?el("th",{text:"Volume"}):null]);
+  t.appendChild(el("thead",{},head));
+  const tb=el("tbody");
+  rows.forEach(r=>{
+    tb.appendChild(el("tr",{},[
+      el("td",{},[el("span",{cls:"n",text:r.n}), el("span",{cls:"s",text:r.s})]),
+      el("td",{text:fmtPrice(r.p)}),
+      el("td",{cls:cls(r.c),text:fmtPct(r.c)}),
+      showVol?el("td",{text:fmtBig(r.v)}):null
+    ]));
+  });
+  t.appendChild(tb);
+  renderChart(rows);
+  const notes = {
+    gainers: live ? "Biggest 24h moves among the top 250 coins by market cap." : "Largest 24h moves reported in the snapshot, gainers first.",
+    trending: live ? "Most-searched coins on CoinGecko right now." : "Most-searched coins on CoinGecko as of the snapshot. Prices shown where reported.",
+    volume: live ? "Highest 24h volume relative to market cap: coins trading far more than usual." : "Highest 24h trading volume reported in the snapshot."
+  };
+  $("note").textContent = notes[tab];
+}
+$("tabs").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-k]"); if(!b) return;
+  tab=b.dataset.k;
+  document.querySelectorAll("#tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  renderTable();
+});
+
+function renderAll(){
+  renderScreen();
+  renderTape(); renderSummary(); renderList(); renderFeature(); renderTable();
+  $("status").innerHTML = live
+    ? "<b>Live</b> CoinGecko and CryptoCompare, refreshes every 2 minutes"
+    : "Snapshot from <b>"+D.asOf+"</b>. Live feeds can't load on this page.";
+}
+
+/* ---------- Live data (works when the page is hosted where outside requests are allowed) ---------- */
+async function getJSON(url){
+  const ctl=new AbortController(); const to=setTimeout(()=>ctl.abort(),7000);
+  try{ const r=await fetch(url,{signal:ctl.signal}); if(!r.ok) throw new Error(r.status); return await r.json(); }
+  finally{ clearTimeout(to); }
+}
+async function loadLive(){
+  const CG="https://api.coingecko.com/api/v3";
+  const [mk, tr, gl, nw] = await Promise.all([
+    getJSON(CG+"/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&price_change_percentage=24h,7d"),
+    getJSON(CG+"/search/trending"),
+    getJSON(CG+"/global"),
+    getJSON("https://min-api.cryptocompare.com/data/v2/news/?lang=EN")
+  ]);
+  const coin = c => ({n:c.name, s:(c.symbol||"").toUpperCase(), p:c.current_price, c:c.price_change_percentage_24h, v:c.total_volume, m:c.market_cap, c7:c.price_change_percentage_7d_in_currency});
+  const all = mk.map(coin).filter(c=>c.p!=null);
+  const movers=[...all].filter(c=>c.c!=null).sort((a,b)=>b.c-a.c);
+  const tapeSyms=["BTC","ETH","SOL","XRP","BNB","DOGE","HYPE"];
+  const next = {
+    asOf: new Date().toLocaleString(),
+    summary:{ mcap:gl.data?.total_market_cap?.usd, vol:gl.data?.total_volume?.usd, btcDom:gl.data?.market_cap_percentage?.btc },
+    tape: tapeSyms.map(s=>all.find(c=>c.s===s)).filter(Boolean).map(c=>({s:c.s,p:c.p,c:c.c})),
+    gainers: movers.slice(0,10),
+    trending: (tr.coins||[]).slice(0,10).map(({item})=>({
+      n:item.name, s:(item.symbol||"").toUpperCase(),
+      p:item.data?.price ?? null, c:item.data?.price_change_percentage_24h?.usd ?? null
+    })),
+    small: all.filter(c=>c.m>=3e7&&c.m<=1e9&&c.v>=1e6),
+    volume: all.filter(c=>c.m>5e7&&c.v).sort((a,b)=>(b.v/b.m)-(a.v/a.m)).slice(0,10),
+    news: (nw.Data||[]).slice(0,12).map(a=>({
+      t:a.title, src:a.source_info?.name||a.source, u:a.url,
+      time:new Date(a.published_on*1000).toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}),
+      d:(a.body||"").replace(/\s+/g," ").slice(0,220)+((a.body||"").length>220?"…":"")
+    }))
+  };
+  if(!next.news.length) next.news = D.news;
+  const keepIdx = live; D=next; live=true;
+  if(!keepIdx){ idx=0; started=Date.now(); }
+  idx = Math.min(idx, D.news.length-1);
+  renderAll();
+}
+
+
+
+/* ---------- Strategy screen ---------- */
+function scoreCoin(x){
+  const sig=[]; let sc=0;
+  const vr = (x.v&&x.m) ? x.v/x.m : null;
+  if(vr!=null){ sc+=Math.min(35, vr*100); if(vr>=.25) sig.push(["Volume surge","g"]); else if(vr<.05){ sig.push(["Thin volume","r"]); sc-=10; } }
+  if(x.c!=null){
+    if(x.c>40){ sig.push(["Overextended","r"]); sc+=5; }
+    else if(x.c>=3){ sig.push(["Momentum","g"]); sc+=30; }
+    else if(x.c>=0) sc+=8;
+    else { sig.push(["Falling","r"]); sc-=10; }
+  }
+  if(x.c7!=null){
+    if(x.c7>0){ sig.push(["7d uptrend","b"]); sc+=Math.min(30, 10+x.c7/2); }
+    else if(x.c7<-20){ sig.push(["7d downtrend","r"]); sc-=10; }
+  }
+  if(vr==null) sig.push(["Mkt cap n/a","b"]);
+  return {...x, vr, score:Math.max(0,Math.min(100,Math.round(sc))), sig};
+}
+function renderScreen(){
+  const rows=(D.small||[]).map(scoreCoin).sort((a,b)=>b.score-a.score).slice(0,15);
+  const t=$("scr"); t.innerHTML="";
+  t.appendChild(el("thead",{},el("tr",{},[el("th",{text:"Coin"}),el("th",{text:"Score"}),el("th",{text:"24h"}),el("th",{text:"7d"}),el("th",{text:"Signals"})])));
+  const tb=el("tbody");
+  rows.forEach(r=>{
+    const col = r.score>=60?"var(--up)":r.score>=35?"var(--blue)":"var(--down)";
+    const sc=el("span",{cls:"score",text:String(r.score)}); sc.style.color=col;
+    tb.appendChild(el("tr",{},[
+      el("td",{},[el("span",{cls:"n",text:r.n}),el("span",{cls:"s",text:r.s})]),
+      el("td",{},sc),
+      el("td",{cls:cls(r.c),text:fmtPct(r.c)}),
+      el("td",{cls:cls(r.c7),text:fmtPct(r.c7)}),
+      el("td",{},el("div",{cls:"chips"},r.sig.map(([k,c])=>el("span",{cls:"chip "+c,text:k}))))
+    ]));
+  });
+  t.appendChild(tb);
+  $("scrnote").textContent = live
+    ? "Scored 0 to 100 from volume, 24h and 7d moves across coins with $30M to $1B market cap. Updates with the live feed. A high score means the pattern is present, not that the price will keep rising."
+    : "The snapshot only includes a few small coins, and all of them are falling, so none pass. The full screen scores every $30M to $1B coin once the page runs on live data (host the file outside claude.ai).";
+}
+
+/* ---------- Learn view ---------- */
+const GLOSS = [
+ ["Airdrop","Free tokens sent to wallets, usually to reward early users or promote a new project."],
+ ["All-time high (ATH)","The highest price a coin has ever reached."],
+ ["Altcoin","Any cryptocurrency other than Bitcoin."],
+ ["Bear market","A long stretch of falling prices and pessimism."],
+ ["Blockchain","A shared, tamper-resistant ledger of transactions, grouped into blocks and linked in order."],
+ ["BTC dominance","Bitcoin's share of the total crypto market cap. Rising dominance often means money is moving out of altcoins."],
+ ["Bull market","A long stretch of rising prices and optimism."],
+ ["Candlestick","A chart bar showing a period's open, high, low, and close prices."],
+ ["CEX","Centralized exchange: a company that holds your funds and matches trades, like Coinbase or Kraken."],
+ ["Cold wallet","A wallet kept offline, such as a hardware device. Safer from hackers, less convenient."],
+ ["DCA (dollar-cost averaging)","Buying a fixed dollar amount on a regular schedule instead of all at once, to smooth out price swings."],
+ ["DeFi","Decentralized finance: lending, borrowing, and trading run by smart contracts instead of banks."],
+ ["DEX","Decentralized exchange: trade directly from your wallet through smart contracts, like Uniswap."],
+ ["ETF","Exchange-traded fund. Spot crypto ETFs let people get Bitcoin or Ether exposure through a regular brokerage account."],
+ ["Fear & Greed Index","A 0 to 100 gauge of market mood. Low readings mean fear, high readings mean greed."],
+ ["FOMO","Fear of missing out: buying because prices are rising fast, often near a top."],
+ ["FUD","Fear, uncertainty, and doubt: negative news or rumors that push prices down."],
+ ["Futures","Contracts to buy or sell at a set price later. Perpetual futures (perps) never expire and are popular for leveraged trading."],
+ ["Gas fee","The fee paid to process a transaction on a blockchain, especially Ethereum."],
+ ["Halving","A scheduled cut in Bitcoin's mining reward, roughly every four years, which slows new supply."],
+ ["HODL","Holding through ups and downs rather than selling. Started as a typo of \"hold.\""],
+ ["Hot wallet","A wallet connected to the internet, like a phone app or exchange account. Convenient but more exposed to hacks."],
+ ["KYC","Know your customer: identity checks exchanges require before you can trade."],
+ ["Leverage","Borrowed money that multiplies a position's size. 10x leverage means a 10% move against you can wipe out your stake."],
+ ["Limit order","An order that only fills at your chosen price or better."],
+ ["Liquidation","When an exchange force-closes a leveraged position because losses used up the collateral."],
+ ["Liquidity","How easily an asset can be bought or sold without moving its price much."],
+ ["Market cap","Price times circulating supply: a rough measure of a coin's total value."],
+ ["Market order","An order that fills immediately at the best available price."],
+ ["Mining","Using computing power to validate transactions and earn new coins in proof-of-work networks like Bitcoin."],
+ ["NFT","Non-fungible token: a unique token representing ownership of a specific digital item."],
+ ["Private key","The secret code that proves you own your crypto. Anyone who has it can move your funds."],
+ ["Proof of stake","A system where validators lock up coins to secure the network and earn rewards. Used by Ethereum."],
+ ["Proof of work","A system where miners compete with computing power to secure the network. Used by Bitcoin."],
+ ["Pump and dump","A scheme where a coin's price is hyped up, then insiders sell on latecomers."],
+ ["Rug pull","When a project's creators abandon it and take investors' money."],
+ ["Seed phrase","12 or 24 words that can restore a wallet. Never share it; anyone with it controls your funds."],
+ ["Slippage","The difference between the price you expected and the price you got, common in fast or thin markets."],
+ ["Smart contract","Code on a blockchain that runs automatically when its conditions are met."],
+ ["Spot trading","Buying or selling crypto for immediate delivery at the current price."],
+ ["Stablecoin","A token designed to hold a steady value, usually $1, like USDC or USDT."],
+ ["Staking","Locking up coins to help secure a proof-of-stake network in exchange for rewards."],
+ ["Stop-loss","An order that sells automatically if the price drops to a set level, to limit losses."],
+ ["Token","A crypto asset built on an existing blockchain rather than its own."],
+ ["Trading pair","Two assets traded against each other, like BTC/USD or ETH/BTC."],
+ ["Volatility","How sharply and often a price swings."],
+ ["Volume","The total amount traded over a period, usually 24 hours. A volume surge often signals news or big moves."],
+ ["Wallet","Software or hardware that holds your keys and lets you send and receive crypto."],
+ ["Whale","A holder with a very large amount of a coin, big enough to move its price."]
+];
+function renderGloss(q=""){
+  const box=$("gloss"); box.innerHTML="";
+  const t=q.trim().toLowerCase();
+  const hits=GLOSS.filter(([k,v])=>!t||k.toLowerCase().includes(t)||v.toLowerCase().includes(t));
+  hits.forEach(([k,v])=>box.appendChild(el("div",{},[el("dt",{text:k}),el("dd",{text:v})])));
+  $("gcount").textContent = hits.length ? hits.length+" terms" : "No terms match. Try a shorter word.";
+}
+$("gsearch").addEventListener("input",e=>renderGloss(e.target.value));
+document.querySelector(".views").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-v]"); if(!b) return;
+  document.querySelectorAll(".views button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  const v=b.dataset.v;
+  $("dash").hidden=v!=="dash"; $("learn").hidden=v!=="learn"; $("strat").hidden=v!=="strat";
+  window.scrollTo(0,0);
+});
+renderGloss();
+
+renderAll();
+requestAnimationFrame(tick);
+loadLive().then(()=>setInterval(()=>loadLive().catch(()=>{}),120000)).catch(()=>{});
+</script>
+</body>
+</html>
