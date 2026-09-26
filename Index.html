@@ -10,7 +10,7 @@
 <style>
 :root{
   --bg:#050608;--panel:rgba(10,14,24,.82);--line:#1d2a44;--ink:#E6ECFF;--mute:#7F8BA8;
-  --up:#22E07A;--down:#FF2E4D;--brass:#FF2E4D;--blue:#3D9BFF;--track:#0f1628;
+  --up:#22E07A;--down:#FFB547;--cyan:#29E3FF;--brass:#29E3FF;--blue:#3D9BFF;--track:#0f1628;
   --hud:"Orbitron","Rajdhani",system-ui,sans-serif;
   box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
   color-scheme:dark;
@@ -21,7 +21,7 @@
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;min-height:100%;color:var(--ink);font:500 16px/1.5 "Rajdhani",system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;
   background:
-    radial-gradient(900px 520px at 0% 0%,rgba(255,46,77,.16),transparent 60%),
+    radial-gradient(900px 520px at 0% 0%,rgba(41,227,255,.16),transparent 60%),
     radial-gradient(900px 560px at 100% 100%,rgba(61,155,255,.18),transparent 60%),
     linear-gradient(rgba(61,155,255,.05) 1px,transparent 1px) 0 0/40px 40px,
     linear-gradient(90deg,rgba(61,155,255,.05) 1px,transparent 1px) 0 0/40px 40px,
@@ -37,14 +37,14 @@ button{font:inherit;color:inherit}
 
 header{display:flex;flex-wrap:wrap;align-items:center;gap:6px 18px;padding:20px 20px 14px;max-width:1320px;margin:0 auto}
 header h1{font:800 24px/1 var(--hud);margin:0;letter-spacing:.14em;text-transform:uppercase;
-  background:linear-gradient(90deg,var(--down),#ff7a8c 40%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 0 10px rgba(255,46,77,.35))}
+  background:linear-gradient(90deg,var(--cyan),#8fefff 40%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 10px rgba(41,227,255,.35))}
 .status{color:var(--mute);font-size:14px;display:flex;align-items:center;gap:8px}
-.status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--down);box-shadow:0 0 8px var(--down);animation:blink 1.6s infinite}
+.status::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:blink 1.6s infinite}
 .status b{font-weight:600;color:var(--blue)}
 @keyframes blink{50%{opacity:.25}}
 .tape{display:flex;gap:26px;overflow-x:auto;padding:9px 20px;font-size:14px;max-width:1320px;margin:0 auto;scrollbar-width:none;
-  border-block:1px solid transparent;border-image:linear-gradient(90deg,var(--down),var(--line) 30%,var(--line) 70%,var(--blue)) 1}
+  border-block:1px solid transparent;border-image:linear-gradient(90deg,var(--cyan),var(--line) 30%,var(--line) 70%,var(--blue)) 1}
 .tape::-webkit-scrollbar{display:none}
 .tape span{white-space:nowrap}
 .tape .sym{font:700 12px var(--hud);letter-spacing:.08em;margin-right:8px;color:var(--mute)}
@@ -53,7 +53,7 @@ main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:22px;p
 @media (max-width:860px){main{grid-template-columns:1fr;padding:14px}header,.tape{padding-left:14px;padding-right:14px}}
 section.col{min-width:0}
 h2{font:700 12px/1.2 var(--hud);letter-spacing:.2em;text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:10px}
-#news-h{color:var(--down)} #mkt-h{color:var(--blue)}
+#news-h{color:var(--cyan)} #mkt-h{color:var(--blue)}
 h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,currentColor,transparent);opacity:.5}
 
 /* HUD frame shared by both panels */
@@ -62,21 +62,21 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,currentC
   backdrop-filter:blur(6px)}
 .feature::before,.panel::before{content:"";position:absolute;top:0;left:0;width:60px;height:2px;background:var(--c)}
 .feature::after,.panel::after{content:"";position:absolute;bottom:0;right:0;width:60px;height:2px;background:var(--c)}
-.feature{--c:var(--down);padding:24px 24px 0;box-shadow:inset 0 0 60px rgba(255,46,77,.07)}
+.feature{--c:var(--cyan);padding:24px 24px 0;box-shadow:inset 0 0 60px rgba(41,227,255,.07)}
 .panel{--c:var(--blue);padding:18px;box-shadow:inset 0 0 60px rgba(61,155,255,.07)}
 
 .feature .src{font:600 11px var(--hud);letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
 .feature h3{font:700 clamp(21px,3vw,30px)/1.2 var(--hud);margin:10px 0 12px;letter-spacing:.01em;max-width:26ch;text-shadow:0 0 18px rgba(61,155,255,.25)}
 .feature p{margin:0 0 18px;color:#AEB8D3;max-width:62ch;font-size:17px;line-height:1.45}
 .feature .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:18px;flex-wrap:wrap}
-.feature .read{font:600 12px var(--hud);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--down);border-bottom:1px solid currentColor;padding-bottom:2px}
-.feature .read:hover{text-shadow:0 0 10px var(--down)}
+.feature .read{font:600 12px var(--hud);letter-spacing:.12em;text-transform:uppercase;text-decoration:none;color:var(--cyan);border-bottom:1px solid currentColor;padding-bottom:2px}
+.feature .read:hover{text-shadow:0 0 10px var(--cyan)}
 .ctrls{display:flex;align-items:center;gap:6px}
 .ctrls button{background:rgba(61,155,255,.06);border:1px solid var(--line);width:34px;height:34px;cursor:pointer;display:grid;place-items:center;color:var(--blue)}
 .ctrls button:hover{border-color:var(--blue);box-shadow:0 0 12px rgba(61,155,255,.4)}
 .ctrls .count{font:600 12px var(--hud);color:var(--mute);min-width:52px;text-align:center;letter-spacing:.08em}
 .progress{height:3px;background:var(--track);margin:0 -24px}
-.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--down),var(--blue));box-shadow:0 0 10px var(--blue),0 0 4px var(--down)}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cyan),var(--blue));box-shadow:0 0 10px var(--blue),0 0 4px var(--cyan)}
 .fade{animation:fade .5s ease}
 @keyframes fade{0%{opacity:0;filter:blur(3px);transform:translateX(-6px)}60%{opacity:1}100%{filter:none;transform:none}}
 @media (prefers-reduced-motion:reduce){.fade,.status::before{animation:none}}
@@ -87,17 +87,17 @@ h2::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,currentC
 .list li button:hover .t{color:#fff;text-shadow:0 0 10px rgba(61,155,255,.5)}
 .list .t{font-weight:600;font-size:16.5px;line-height:1.3;color:#C9D2EA}
 .list .m{font-size:13px;color:var(--mute);white-space:nowrap;padding-top:2px}
-.list li[aria-current="true"] .t{color:var(--down)}
-.list li[aria-current="true"] button::before{background:var(--down);border-color:var(--down);box-shadow:0 0 8px var(--down)}
+.list li[aria-current="true"] .t{color:var(--cyan)}
+.list li[aria-current="true"] button::before{background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 8px var(--cyan)}
 
 .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
 .summary div{min-width:0;border-left:2px solid var(--line);padding-left:10px}
-.summary div:first-child{border-color:var(--down)} .summary div:last-child{border-color:var(--blue)}
+.summary div:first-child{border-color:var(--cyan)} .summary div:last-child{border-color:var(--blue)}
 .summary small{display:block;font:600 10px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
 .summary strong{font:700 17px/1.5 var(--hud);letter-spacing:.02em}
 .tabs{display:flex;gap:2px;border:1px solid var(--line);padding:3px;margin-bottom:14px}
 .tabs button{flex:1;border:0;background:none;padding:9px 4px;cursor:pointer;font:600 10.5px var(--hud);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
-.tabs button[aria-selected="true"]{background:linear-gradient(90deg,rgba(255,46,77,.22),rgba(61,155,255,.22));color:#fff;box-shadow:inset 0 -2px 0 var(--blue)}
+.tabs button[aria-selected="true"]{background:linear-gradient(90deg,rgba(41,227,255,.22),rgba(61,155,255,.22));color:#fff;box-shadow:inset 0 -2px 0 var(--blue)}
 .chart{width:100%;overflow-x:auto;padding:6px 0}
 .chart svg{display:block;width:100%;height:auto}
 .chart svg rect{filter:drop-shadow(0 0 4px currentColor)}
@@ -114,8 +114,8 @@ td .s{color:var(--mute);font:600 10px var(--hud);letter-spacing:.08em;margin-lef
 /* view switch + learn */
 .views{display:flex;gap:2px;border:1px solid var(--line);padding:3px;margin-left:auto}
 .views button{border:0;background:none;padding:8px 14px;cursor:pointer;font:600 11px var(--hud);letter-spacing:.12em;text-transform:uppercase;color:var(--mute)}
-.views button[aria-selected="true"]{background:linear-gradient(90deg,rgba(255,46,77,.22),rgba(61,155,255,.22));color:#fff;box-shadow:inset 0 -2px 0 var(--down)}
-@media (max-width:560px){.views{margin-left:0;width:100%}.views button{flex:1}}
+.views button[aria-selected="true"]{background:linear-gradient(90deg,rgba(41,227,255,.22),rgba(61,155,255,.22));color:#fff;box-shadow:inset 0 -2px 0 var(--cyan)}
+@media (max-width:560px){.views{margin-left:0;width:100%}.views button{flex:1;padding:8px 2px;font-size:9.5px;letter-spacing:.06em}}
 [hidden]{display:none!important}
 .learn{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;padding:22px 20px;max-width:1320px;margin:0 auto}
 @media (max-width:860px){.learn{grid-template-columns:1fr;padding:14px}}
@@ -127,7 +127,7 @@ td .s{color:var(--mute);font:600 10px var(--hud);letter-spacing:.08em;margin-lef
 .primer ol{margin:0 0 10px;padding-left:22px}
 .primer li{margin-bottom:6px}
 .primer li b,.primer p b{color:var(--ink)}
-.primer .warn{border-left:2px solid var(--down);padding:8px 12px;background:rgba(255,46,77,.07);margin-top:16px}
+.primer .warn{border-left:2px solid var(--down);padding:8px 12px;background:rgba(255,181,71,.07);margin-top:16px}
 .gsearch{width:100%;background:rgba(61,155,255,.06);border:1px solid var(--line);color:var(--ink);font:500 16px "Rajdhani",sans-serif;padding:10px 12px;margin-bottom:6px}
 .gsearch::placeholder{color:var(--mute)}
 .gsearch:focus{outline:none;border-color:var(--blue);box-shadow:0 0 12px rgba(61,155,255,.35)}
@@ -148,6 +148,18 @@ td .s{color:var(--mute);font:600 10px var(--hud);letter-spacing:.08em;margin-lef
 .crit{list-style:none;padding:0;margin:0 0 10px}
 .crit li{display:grid;grid-template-columns:auto 1fr;gap:10px;padding:8px 0;border-bottom:1px solid rgba(29,42,68,.7)}
 .crit li span:first-child{font:700 12px var(--hud);color:var(--blue);padding-top:3px;min-width:22px}
+
+/* policy */
+.law{margin-bottom:18px}
+.law .head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
+.law h3{margin:0!important}
+.stamp{font:700 10px var(--hud);letter-spacing:.14em;text-transform:uppercase;padding:4px 8px;border:1px solid currentColor}
+.stamp.ok{color:var(--up);box-shadow:0 0 10px rgba(34,224,122,.25)}
+.stamp.no{color:var(--down);box-shadow:0 0 10px rgba(255,181,71,.25)}
+.hit{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 10px}
+.src-links{font-size:14px;color:var(--mute)}
+.src-links a{color:var(--blue);margin-right:12px}
+.free{font:700 9px var(--hud);letter-spacing:.1em;color:var(--up);border:1px solid currentColor;padding:1px 5px;margin-left:8px;vertical-align:2px}
 </style>
 </head>
 <body>
@@ -156,6 +168,7 @@ td .s{color:var(--mute);font:600 10px var(--hud);letter-spacing:.08em;margin-lef
   <span class="status" id="status">Loading…</span>
   <nav class="views" role="tablist" aria-label="View">
     <button role="tab" data-v="dash" aria-selected="true">Dashboard</button>
+    <button role="tab" data-v="policy" aria-selected="false">Policy</button>
     <button role="tab" data-v="strat" aria-selected="false">Strategy</button>
     <button role="tab" data-v="learn" aria-selected="false">Learn</button>
   </nav>
@@ -197,9 +210,51 @@ td .s{color:var(--mute);font:600 10px var(--hud);letter-spacing:.08em;margin-lef
   </section>
 </main>
 
+<div class="learn" id="policy" hidden>
+  <section class="col" aria-labelledby="law-h">
+    <h2 id="law-h" style="color:var(--up)">Signed into law</h2>
+    <div class="feature primer">
+      <div class="law">
+        <div class="head"><h3>GENIUS Act</h3><span class="stamp ok">Signed July 18, 2025</span></div>
+        <p>The first major US crypto law. It creates a federal framework for dollar-backed payment stablecoins: what counts as one, how they must be backed, and who can issue them. Banks, nonbanks and credit unions can now launch their own.</p>
+        <p><b>Markets it touches</b></p>
+        <div class="hit"><span class="chip b">Stablecoins (USDC, USDT, USD1)</span><span class="chip b">Circle (CRCL)</span><span class="chip b">Coinbase (COIN)</span><span class="chip b">Robinhood (HOOD)</span><span class="chip b">Banks</span></div>
+        <p><b>Why it matters now:</b> On Sep 24, 2026 the Federal Reserve proposed the rules that put the law into practice, including safe, liquid reserve requirements, redemption at par, and reserve disclosures. The public comment period is open, so the final details are still in play.</p>
+        <p class="src-links">Free reads: <a href="https://www.cbsnews.com/news/trump-signs-genius-act-crypto-bill/" target="_blank" rel="noopener">CBS News</a><a href="https://thehill.com/policy/technology/5412298-genius-act-crypto-regulation-5-things/" target="_blank" rel="noopener">The Hill: 5 things to know</a></p>
+      </div>
+      <div class="law">
+        <div class="head"><h3>DeFi broker rule repeal</h3><span class="stamp ok">Signed April 2025</span></div>
+        <p>Overturned a Biden-era IRS rule that would have made decentralized finance platforms report user transactions like traditional brokers. Critics said code-run protocols couldn't comply. It passed with bipartisan support.</p>
+        <div class="hit"><span class="chip b">DeFi tokens</span><span class="chip b">Decentralized exchanges</span><span class="chip b">Tax reporting</span></div>
+        <p class="src-links">Free read: <a href="https://www.fxstreet.com/amp/cryptocurrencies/news/trump-signs-pro-crypto-bill-202504111017" target="_blank" rel="noopener">FXStreet</a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="col" aria-labelledby="pend-h">
+    <h2 id="pend-h" style="color:var(--down)">Not law yet</h2>
+    <div class="panel primer">
+      <div class="law">
+        <div class="head"><h3>CLARITY Act</h3><span class="stamp no">Stalled in Senate</span></div>
+        <p>The big market-structure bill. It would split oversight of digital assets between the SEC and CFTC, and it allowed stablecoin companies to pay customers rewards. It passed the House 294 to 134 in July 2025, but on Sep 15, 2026 a Senate vote to open debate failed 49 to 50, short of the 60 needed.</p>
+        <p>Banks, especially community banks, opposed the stablecoin rewards, arguing crypto firms could compete for deposits without bank-level rules. Ethics provisions tied to the president's own crypto ventures were another sticking point. With midterms approaching, many expect it to slip to 2027.</p>
+        <div class="hit"><span class="chip r">Exchanges</span><span class="chip r">Altcoins (SEC vs CFTC status)</span><span class="chip r">Stablecoin yield</span><span class="chip r">DeFi</span></div>
+        <p class="src-links">Free read: <a href="https://www.npr.org/2026/09/15/nx-s1-5968711/clarity-act-crypto-senate-vote" target="_blank" rel="noopener">NPR</a></p>
+      </div>
+      <h3>What to watch</h3>
+      <ol>
+        <li><b>Fed stablecoin rules.</b> Stricter reserve rules could slow new stablecoin launches; looser ones could speed them.</li>
+        <li><b>A CLARITY revival.</b> Any new Senate deal would likely move exchange stocks and altcoins whose legal status is unclear.</li>
+        <li><b>Fed rate decisions.</b> Separate from crypto laws, rate-hike odds are moving Bitcoin and risk assets right now.</li>
+      </ol>
+      <p class="note">Laws and status as of Sep 25, 2026. This is a summary, not legal or financial advice.</p>
+    </div>
+  </section>
+</div>
+
 <div class="learn" id="strat" hidden>
   <section class="col" aria-labelledby="play-h">
-    <h2 id="play-h" style="color:var(--down)">Small-cap momentum playbook</h2>
+    <h2 id="play-h" style="color:var(--cyan)">Small-cap momentum playbook</h2>
     <div class="feature primer">
       <p>No one can reliably tell which small coins will rise; most small caps lose value over time, and past patterns often don't repeat. What you can do is use a clear rule set that finds coins <b>showing</b> momentum right now and limits how much you lose when it fades. That's what the screen on this tab does.</p>
 
@@ -238,7 +293,7 @@ td .s{color:var(--mute);font:600 10px var(--hud);letter-spacing:.08em;margin-lef
 
 <div class="learn" id="learn" hidden>
   <section class="col" aria-labelledby="primer-h">
-    <h2 id="primer-h" style="color:var(--down)">Crypto basics</h2>
+    <h2 id="primer-h" style="color:var(--cyan)">Crypto basics</h2>
     <div class="feature primer">
       <h3>What cryptocurrency is</h3>
       <p>A cryptocurrency is digital money that runs on a <b>blockchain</b>: a shared public ledger copied across thousands of computers. No bank or government keeps the record. Instead, the network agrees on every transaction, and cryptography makes past entries practically impossible to change.</p>
@@ -310,6 +365,9 @@ const SNAP = {
     {t:"Bitcoin holds near $84.4K as hot PMI data lifts Fed hike odds", src:"The Rio Times", time:"Sep 24",
      d:"BTC ended Thursday flat after dipping under $84,000. A strong US business-activity reading pushed October hike odds to roughly 70% and Treasury yields to a 19-year high.",
      u:"https://www.riotimesonline.com/crypto-markets-bitcoin-majors-friday-september-25-2026/"},
+    {t:"Senate blocks the CLARITY Act crypto bill, 49 to 50", src:"NPR", time:"Sep 15",
+     d:"The vote to open debate fell well short of 60. All Democrats and four Republicans voted no, with banks' opposition to stablecoin rewards a central fight.",
+     u:"https://www.npr.org/2026/09/15/nx-s1-5968711/clarity-act-crypto-senate-vote"},
     {t:"Fed proposes stablecoin rules under the GENIUS Act", src:"The Rio Times", time:"Sep 24",
      d:"The proposal would require stablecoins to be backed by safe, liquid assets with redemption at par and new reserve disclosures. A public comment period is now open.",
      u:"https://www.riotimesonline.com/crypto-markets-bitcoin-majors-friday-september-25-2026/"},
@@ -370,7 +428,7 @@ function renderFeature(){
   const a = D.news[idx]; if(!a) return;
   const body = $("fBody"); body.innerHTML = "";
   const wrap = el("div",{cls:"fade"},[
-    el("div",{cls:"src",text:a.src+(a.time?", "+a.time:"")}),
+    el("div",{cls:"src"},[document.createTextNode(a.src+(a.time?", "+a.time:"")), el("span",{cls:"free",text:"Free"})]),
     el("h3",{text:a.t}),
     a.d ? el("p",{text:a.d}) : null
   ]);
@@ -630,7 +688,7 @@ document.querySelector(".views").addEventListener("click",e=>{
   const b=e.target.closest("button[data-v]"); if(!b) return;
   document.querySelectorAll(".views button").forEach(x=>x.setAttribute("aria-selected",x===b));
   const v=b.dataset.v;
-  $("dash").hidden=v!=="dash"; $("learn").hidden=v!=="learn"; $("strat").hidden=v!=="strat";
+  $("dash").hidden=v!=="dash"; $("policy").hidden=v!=="policy"; $("learn").hidden=v!=="learn"; $("strat").hidden=v!=="strat";
   window.scrollTo(0,0);
 });
 renderGloss();
